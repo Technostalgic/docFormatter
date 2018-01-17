@@ -4,8 +4,11 @@
 function formatDocs(docdata){
 	var spldat = docdata.split('\n');
 	var groups = [];
+	var names = [];
 	var lastgroup = 0;
 	var container = document.createElement("div");
+	var contents = document.createElement("div");
+	
 	for(var i = 0; i < spldat.length; i++){
 		var indents = countIndentation(spldat[i]);
 		var str = truncateIndents(spldat[i]);
@@ -15,18 +18,17 @@ function formatDocs(docdata){
 		var clss = "";
 		
 		switch(indents){
-			case 0:
-				clss = "mainDivider";
-				break;
-			case 1:
-				clss = "subDivider";
-				break;
-			case 2:
-				clss = "category";
-				break;
-			case 3:
-				clss = "descriptor";
-				break;
+			case 0: clss = "afmMainDivider"; break;
+			case 1: clss = "afmSubDivider"; break;
+			case 2: clss = "afmCategory"; break;
+			case 3: clss = "afmDescriptor"; break;
+		}
+		
+		if(clss == "afmMainDivider" && str.length > 0){
+			var name = str.replace(':', '');
+			console.log(name);
+			elem.setAttribute("id", name.replace(' ', ''));
+			names.push(name);
 		}
 		
 		elem.innerHTML = "<span class='afmSpan " + clss + "'>" + str + "</span>";
@@ -40,8 +42,25 @@ function formatDocs(docdata){
 			container.appendChild(elem);
 		lastgroup = indents;
 	}
+	
+	var contentsHTML = "<span class='afmSpan afmContentsHeader'> Contents:</span>\n";
+	contentsHTML += "<ul>\n";
+	for(var i = 1; i < names.length; i ++){
+		var elem = "<li><a href='#" + names[i].replace(' ', '') + "' class='afmLink'>" + names[i] + "</a> <br /></li>\n"
+		contentsHTML += elem;
+	}
+	contentsHTML += "</ul>"
+	
+	contents.innerHTML = contentsHTML;
+	contents.classList.add("afmDiv");
+	contents.classList.add("afmContents");
+	
 	document.body.appendChild(container);
-	return container;
+	
+	if(names.length > 0)
+		document.getElementById(names[0]).appendChild(contents);
+	
+	return { table: contents, data: container };
 }
 
 function countIndentation(str){
@@ -60,8 +79,7 @@ function wrapBrackets(str){
 	var r1 = 0;
 	var fstr = "";
 	
-	while(found)
-	{
+	while(found){
 		r0 = r1;
 		while(str[r0] != '['){
 			if(r0 >= str.length){
@@ -71,7 +89,7 @@ function wrapBrackets(str){
 			r0++;
 		} if(!found) break;
 		
-		fstr = fstr + str.substr(r1, r0 - r1) + "<span class='afmSpan inBrackets'>";
+		fstr = fstr + str.substr(r1, r0 - r1) + "<span class='afmSpan afmInBrackets'>";
 		r1 = r0;
 		
 		while(str[r1] != ']'){
