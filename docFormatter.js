@@ -10,9 +10,12 @@ function formatDocs(docdata){
 	var contents = document.createElement("div");
 	
 	for(var i = 0; i < spldat.length; i++){
+		if(spldat[i].trim().length <= 0) continue;
+		
 		var indents = countIndentation(spldat[i]);
 		var str = truncateIndents(spldat[i]);
 		str = wrapBrackets(str);
+		str = wrapNotices(str);
 		
 		var elem = document.createElement("div");
 		var clss = "";
@@ -25,7 +28,7 @@ function formatDocs(docdata){
 		}
 		
 		if(clss == "afmMainDivider" && str.length > 0){
-			var name = str.replace(':', '');
+			var name = str.split(':')[0];
 			console.log(name);
 			elem.setAttribute("id", name.replace(' ', ''));
 			names.push(name);
@@ -105,4 +108,13 @@ function wrapBrackets(str){
 	fstr = fstr + str.substr(r1);
 	
 	return fstr;
+}
+
+function wrapNotices(str){
+	var ni = str.indexOf("Note:");
+	if(ni < 0)
+		return str;
+	
+	var r = str.substr(0, ni) + "<span class='afmSpan afmNotice'>" + str.substr(ni) + "</span>";
+	return r;
 }

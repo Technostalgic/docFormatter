@@ -51,6 +51,10 @@ body{
 	font-weight: bold;
 }
 
+.afmNotice{
+	color: #D00;
+	font-size: 14px;
+}
 .afmInBrackets{
 	color: #0bb;
 	font-weight: normal;
